@@ -1,0 +1,74 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace SecurityLibrary.ElGamal
+{
+    public class ElGamal
+    {
+        /// <summary>
+        /// Encryption
+        /// </summary>
+        /// <param name="alpha"></param>
+        /// <param name="q"></param>
+        /// <param name="y"></param>
+        /// <param name="k"></param>
+        /// <returns>list[0] = C1, List[1] = C2</returns>
+            public int Decrypt(int c1, int c2, int x, int q)
+            {
+                int power = 1;
+                for (int i = 0; i < x; i++)
+                {
+                    power = (power * c1) % q;
+                }
+
+                int inverse = -1;
+                for (int i = 1; i < q; i++)
+                {
+                    if ((i * power) % q == 1)
+                    {
+                        inverse = i;
+                        break;
+                    }
+                }
+
+                if (inverse == -1)
+                {
+                    return -1;
+                }
+
+                int message = (c2 * inverse) % q;
+
+                return message;
+            }
+
+            public List<long> Encrypt(int q, int alpha, int y, int k, int m)
+            {
+                long[] cipherTextComponents = new long[2];
+                cipherTextComponents[0] = ModularExponentiation(alpha, k, q);
+                cipherTextComponents[1] = (ModularExponentiation(y, k, q) * m) % q;
+
+                return cipherTextComponents.ToList();
+            }
+
+            // Calculates the modular exponentiation of the base raised to the power modulo the modulus.
+            private int ModularExponentiation(int baseValue, int power, int modValue)
+            {
+                int result = 1;
+                while (power > 0)
+                {
+                    if (power % 2 == 1)
+                    {
+                        result = (result * baseValue) % modValue;
+                    }
+                    baseValue = (baseValue * baseValue) % modValue;
+                    power = power / 2;
+                }
+                return result;
+            }
+        }
+
+    }
+
